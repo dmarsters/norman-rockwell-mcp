@@ -1288,7 +1288,7 @@ class NarrativeCohomologyDetector:
 # FASTMCP SERVER INTERFACE
 # ============================================================================
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 mcp = FastMCP("Norman Rockwell Visual Narrative Cohomology v3")
 
