@@ -1285,12 +1285,580 @@ class NarrativeCohomologyDetector:
         return assessment
 
 # ============================================================================
+# PHASE 2.6: RHYTHMIC NARRATIVE DYNAMICS
+# ============================================================================
+#
+# Maps Rockwell's narrative composition into a 5D aesthetic parameter space,
+# enabling rhythmic oscillation between narrative modes and integration with
+# the Lushy Aesthetic Dynamics multi-domain composition framework.
+#
+# Parameters capture the FIVE fundamental axes of single-frame narrative:
+#   1. temporal_compression  - how densely before/during/after coexist
+#   2. gaze_circuit_closure  - how tightly eye-lines form narrative loop
+#   3. emotional_contrast    - opposition/uniformity across characters
+#   4. spatial_intimacy      - character proximity as narrative tension
+#   5. narrative_density     - story elements per unit visual area
+#
+# ============================================================================
+
+ROCKWELL_PARAMETER_NAMES = [
+    "temporal_compression",
+    "gaze_circuit_closure",
+    "emotional_contrast",
+    "spatial_intimacy",
+    "narrative_density"
+]
+
+# Canonical narrative states - each represents a distinct Rockwell mode
+ROCKWELL_CANONICAL_STATES = {
+    "soda_fountain": {
+        # Intimate comedy: tight framing, strong mutual gaze, clear emotional
+        # opposition (awkward youth vs. knowing adult), medium density
+        "temporal_compression": 0.70,
+        "gaze_circuit_closure": 0.90,
+        "emotional_contrast": 0.75,
+        "spatial_intimacy": 0.85,
+        "narrative_density": 0.55,
+        "description": "Intimate counter scenes — The Runaway, After the Prom",
+        "rockwell_examples": ["The Runaway (1958)", "After the Prom (1957)"]
+    },
+    "four_freedoms": {
+        # Dignified universal statement: deep temporal compression (whole era
+        # implied), distributed gaze across many figures, moderate contrast,
+        # communal spacing, high density of symbolic detail
+        "temporal_compression": 0.95,
+        "gaze_circuit_closure": 0.60,
+        "emotional_contrast": 0.40,
+        "spatial_intimacy": 0.50,
+        "narrative_density": 0.85,
+        "description": "Universal humanity — Freedom from Want, Golden Rule",
+        "rockwell_examples": ["Freedom from Want (1943)", "Golden Rule (1961)"]
+    },
+    "saturday_evening_post": {
+        # Classic domestic comedy: strong temporal cues, good circuit, moderate
+        # contrast, moderate spacing, moderate density
+        "temporal_compression": 0.75,
+        "gaze_circuit_closure": 0.80,
+        "emotional_contrast": 0.65,
+        "spatial_intimacy": 0.65,
+        "narrative_density": 0.60,
+        "description": "Domestic comedy of manners — family scenes, holiday chaos",
+        "rockwell_examples": ["Thanksgiving (Freedom from Want)", "Christmas Homecoming (1948)"]
+    },
+    "triple_self_portrait": {
+        # Self-referential/meta-narrative: extreme temporal compression (past/
+        # present/future all visible), unusual gaze (toward viewer/mirror),
+        # internal contrast, isolated figure, very high density of references
+        "temporal_compression": 1.00,
+        "gaze_circuit_closure": 0.45,
+        "emotional_contrast": 0.55,
+        "spatial_intimacy": 0.30,
+        "narrative_density": 1.00,
+        "description": "Meta-narrative self-reference — Triple Self-Portrait",
+        "rockwell_examples": ["Triple Self-Portrait (1960)"]
+    },
+    "problem_we_all_live_with": {
+        # Social witness: extreme temporal depth (history implied), gaze from
+        # viewer to subject with no return (deliberate asymmetry), maximum
+        # emotional contrast, stark spatial isolation, stripped density
+        "temporal_compression": 0.90,
+        "gaze_circuit_closure": 0.35,
+        "emotional_contrast": 1.00,
+        "spatial_intimacy": 0.20,
+        "narrative_density": 0.30,
+        "description": "Social conscience — stark, unflinching witness",
+        "rockwell_examples": ["The Problem We All Live With (1964)", "New Kids in the Neighborhood (1967)"]
+    },
+    "war_bond": {
+        # Propaganda/direct address: moderate temporal (present moment focus),
+        # direct viewer gaze breaking fourth wall, high emotional intensity,
+        # close framing, medium density
+        "temporal_compression": 0.50,
+        "gaze_circuit_closure": 0.70,
+        "emotional_contrast": 0.85,
+        "spatial_intimacy": 0.80,
+        "narrative_density": 0.45,
+        "description": "Direct address — Rosie the Riveter, war effort posters",
+        "rockwell_examples": ["Rosie the Riveter (1943)", "Willie Gillis series"]
+    },
+    "discovery_moment": {
+        # Single-character epiphany: moderate temporal (moment of realization),
+        # broken circuit (gaze toward unseen), internal emotional journey,
+        # intimate with subject, sparse detail focusing attention
+        "temporal_compression": 0.60,
+        "gaze_circuit_closure": 0.50,
+        "emotional_contrast": 0.70,
+        "spatial_intimacy": 0.75,
+        "narrative_density": 0.40,
+        "description": "Moment of realization — Girl at Mirror, Boy in Dining Car",
+        "rockwell_examples": ["Girl at Mirror (1954)", "Boy in a Dining Car (1946)"]
+    }
+}
+
+
+# Phase 2.6 Rhythmic Presets — oscillations between narrative modes
+ROCKWELL_RHYTHMIC_PRESETS = {
+    "intimacy_witness": {
+        "state_a": "soda_fountain",
+        "state_b": "problem_we_all_live_with",
+        "pattern": "sinusoidal",
+        "num_cycles": 3,
+        "steps_per_cycle": 22,
+        "description": "Oscillates between intimate warmth and unflinching social witness — "
+                       "the full range of Rockwell's moral vision"
+    },
+    "comedy_dignity": {
+        "state_a": "saturday_evening_post",
+        "state_b": "four_freedoms",
+        "pattern": "sinusoidal",
+        "num_cycles": 4,
+        "steps_per_cycle": 18,
+        "description": "Between domestic comedy and universal dignity — "
+                       "humor that elevates rather than diminishes"
+    },
+    "gaze_oscillation": {
+        "state_a": "soda_fountain",
+        "state_b": "discovery_moment",
+        "pattern": "triangular",
+        "num_cycles": 3,
+        "steps_per_cycle": 20,
+        "description": "From tight mutual gaze to solitary contemplation — "
+                       "the spectrum of narrative eye-line control"
+    },
+    "density_sweep": {
+        "state_a": "problem_we_all_live_with",
+        "state_b": "triple_self_portrait",
+        "pattern": "sinusoidal",
+        "num_cycles": 2,
+        "steps_per_cycle": 28,
+        "description": "From stark simplicity to information-dense meta-narrative — "
+                       "controls how much visual story is packed per frame"
+    },
+    "address_mode": {
+        "state_a": "war_bond",
+        "state_b": "four_freedoms",
+        "pattern": "square",
+        "num_cycles": 5,
+        "steps_per_cycle": 14,
+        "description": "Between direct audience address and communal observation — "
+                       "toggle between persuasion and witness"
+    }
+}
+
+
+# ============================================================================
+# PHASE 2.7: ATTRACTOR VISUALIZATION — VISUAL VOCABULARY
+# ============================================================================
+#
+# Maps 5D narrative parameter coordinates to image-generation-ready keywords.
+# Each visual type represents a cluster in Rockwell narrative morphospace.
+#
+# ============================================================================
+
+ROCKWELL_VISUAL_TYPES = {
+    "intimate_comedy": {
+        "center": {
+            "temporal_compression": 0.72,
+            "gaze_circuit_closure": 0.88,
+            "emotional_contrast": 0.72,
+            "spatial_intimacy": 0.82,
+            "narrative_density": 0.55
+        },
+        "keywords": [
+            "warm diner counter lighting",
+            "two figures in close conversation",
+            "mutual eye contact across shared surface",
+            "red vinyl stools and chrome detailing",
+            "steam rising from coffee cup as visual bridge",
+            "one figure leaning in with gentle expression",
+            "nostalgic Americana interior"
+        ],
+        "optical_properties": {
+            "lighting": "warm tungsten interior",
+            "palette": "warm golds, reds, cream whites",
+            "focus": "sharp on faces, soft on background"
+        }
+    },
+    "communal_dignity": {
+        "center": {
+            "temporal_compression": 0.92,
+            "gaze_circuit_closure": 0.58,
+            "emotional_contrast": 0.42,
+            "spatial_intimacy": 0.52,
+            "narrative_density": 0.82
+        },
+        "keywords": [
+            "multi-figure gathering around shared table",
+            "warm overhead lighting casting communal glow",
+            "faces expressing gratitude and belonging",
+            "abundance of detail — each object tells a story",
+            "generational spread from elderly to children",
+            "hands reaching toward shared center point",
+            "golden hour light through window behind figures"
+        ],
+        "optical_properties": {
+            "lighting": "warm diffuse overhead with rim light",
+            "palette": "golden amber, warm browns, white linen",
+            "focus": "deep focus, every face readable"
+        }
+    },
+    "social_witness": {
+        "center": {
+            "temporal_compression": 0.90,
+            "gaze_circuit_closure": 0.35,
+            "emotional_contrast": 0.95,
+            "spatial_intimacy": 0.22,
+            "narrative_density": 0.32
+        },
+        "keywords": [
+            "stark isolated figure against institutional wall",
+            "dramatic negative space around subject",
+            "harsh overhead lighting with hard shadows",
+            "deliberate emptiness amplifying human presence",
+            "gaze directed forward with quiet resolve",
+            "muted palette with single saturated accent",
+            "photojournalistic composition with editorial clarity"
+        ],
+        "optical_properties": {
+            "lighting": "high contrast, hard key light",
+            "palette": "desaturated with strategic color accent",
+            "focus": "razor sharp, documentary clarity"
+        }
+    },
+    "meta_narrative": {
+        "center": {
+            "temporal_compression": 0.98,
+            "gaze_circuit_closure": 0.48,
+            "emotional_contrast": 0.55,
+            "spatial_intimacy": 0.32,
+            "narrative_density": 0.95
+        },
+        "keywords": [
+            "layered frames within frames — canvas, mirror, photograph",
+            "artist figure seen from behind in act of creation",
+            "reference images pinned to surface within scene",
+            "self-referential visual recursion",
+            "dense arrangement of meaningful objects",
+            "warm studio lighting with paint-spattered surfaces",
+            "multiple temporal states coexisting in single view"
+        ],
+        "optical_properties": {
+            "lighting": "north-light studio, cool daylight",
+            "palette": "full spectrum, paint-tube vivid",
+            "focus": "selective — sharp on reflections, soft on reality"
+        }
+    },
+    "direct_address": {
+        "center": {
+            "temporal_compression": 0.52,
+            "gaze_circuit_closure": 0.72,
+            "emotional_contrast": 0.82,
+            "spatial_intimacy": 0.78,
+            "narrative_density": 0.45
+        },
+        "keywords": [
+            "single figure addressing viewer with direct eye contact",
+            "heroic low angle emphasizing subject stature",
+            "bold flat background isolating the figure",
+            "prop held as symbol — tool, flag, letter",
+            "rolled sleeves or work-worn hands showing character",
+            "strong rim light separating figure from ground",
+            "propaganda-influenced compositional boldness"
+        ],
+        "optical_properties": {
+            "lighting": "dramatic three-point with strong fill",
+            "palette": "red-white-blue patriotic or earth tones",
+            "focus": "tight on face and hands, everything else subordinate"
+        }
+    },
+    "contemplative_moment": {
+        "center": {
+            "temporal_compression": 0.62,
+            "gaze_circuit_closure": 0.50,
+            "emotional_contrast": 0.68,
+            "spatial_intimacy": 0.74,
+            "narrative_density": 0.42
+        },
+        "keywords": [
+            "solitary figure in moment of private reflection",
+            "gaze directed at unseen object or distant point",
+            "intimate framing with shallow depth of field",
+            "environmental details implying life beyond frame",
+            "body language capturing threshold between states",
+            "soft window light illuminating face from one side",
+            "empty chair or open door suggesting what comes next"
+        ],
+        "optical_properties": {
+            "lighting": "soft directional, natural window light",
+            "palette": "muted warm, twilight tones",
+            "focus": "face sharp, environment dissolving"
+        }
+    }
+}
+
+
+# ============================================================================
+# Phase 2.6/2.7 COMPUTATIONAL ENGINE
+# ============================================================================
+
+import numpy as np
+
+
+def _generate_rockwell_oscillation(
+    num_steps: int,
+    num_cycles: float,
+    pattern: str
+) -> list:
+    """Generate oscillation blend values [0, 1] for rhythmic presets."""
+    t_values = [2 * math.pi * num_cycles * i / num_steps for i in range(num_steps)]
+
+    if pattern == "sinusoidal":
+        return [0.5 * (1 + math.sin(t)) for t in t_values]
+    elif pattern == "triangular":
+        result = []
+        for t in t_values:
+            t_norm = (t / (2 * math.pi)) % 1.0
+            result.append(2 * t_norm if t_norm < 0.5 else 2 * (1 - t_norm))
+        return result
+    elif pattern == "square":
+        return [0.0 if ((t / (2 * math.pi)) % 1.0) < 0.5 else 1.0 for t in t_values]
+    else:
+        raise ValueError(f"Unknown pattern: {pattern}")
+
+
+def _generate_rockwell_preset_trajectory(preset_name: str) -> list:
+    """
+    Generate Phase 2.6 preset trajectory as list of state dicts.
+
+    Returns:
+        List of dicts, each mapping parameter name → float value.
+    """
+    preset = ROCKWELL_RHYTHMIC_PRESETS[preset_name]
+    state_a = ROCKWELL_CANONICAL_STATES[preset["state_a"]]
+    state_b = ROCKWELL_CANONICAL_STATES[preset["state_b"]]
+
+    total_steps = preset["num_cycles"] * preset["steps_per_cycle"]
+    alpha_values = _generate_rockwell_oscillation(
+        total_steps, preset["num_cycles"], preset["pattern"]
+    )
+
+    trajectory = []
+    for alpha in alpha_values:
+        state = {}
+        for p in ROCKWELL_PARAMETER_NAMES:
+            state[p] = (1 - alpha) * state_a[p] + alpha * state_b[p]
+        trajectory.append(state)
+
+    return trajectory
+
+
+def _extract_rockwell_visual_vocabulary(
+    state: dict,
+    strength: float = 1.0
+) -> dict:
+    """
+    Map 5D parameter coordinates to nearest Rockwell visual type.
+
+    Uses nearest-neighbor matching against visual type centers.
+    Returns keywords, optical properties, and match metadata.
+    """
+    best_type = None
+    best_distance = float('inf')
+    best_data = None
+
+    for type_name, type_data in ROCKWELL_VISUAL_TYPES.items():
+        center = type_data["center"]
+        dist_sq = sum(
+            (state.get(p, 0.5) - center[p]) ** 2
+            for p in ROCKWELL_PARAMETER_NAMES
+        )
+        dist = math.sqrt(dist_sq)
+        if dist < best_distance:
+            best_distance = dist
+            best_type = type_name
+            best_data = type_data
+
+    # Weight keywords by strength
+    weighted_keywords = best_data["keywords"][:max(3, int(len(best_data["keywords"]) * strength))]
+
+    return {
+        "nearest_type": best_type,
+        "distance": round(best_distance, 4),
+        "keywords": weighted_keywords,
+        "optical_properties": best_data["optical_properties"],
+        "strength": strength
+    }
+
+
+def _decompose_rockwell_from_description(description: str) -> dict:
+    """
+    Inverse pipeline: text description → 5D Rockwell parameter coordinates.
+
+    Uses keyword matching against visual type vocabularies.
+    """
+    description_lower = description.lower()
+    tokens = set(description_lower.split())
+
+    type_scores = {}
+    for type_name, type_data in ROCKWELL_VISUAL_TYPES.items():
+        score = 0
+        matched = []
+        for kw in type_data["keywords"]:
+            kw_tokens = set(kw.lower().split())
+            overlap = len(tokens & kw_tokens)
+            if overlap >= 2 or any(frag in description_lower for frag in kw.lower().split(",")):
+                score += overlap
+                matched.append(kw)
+        # Also check optical properties
+        for prop_val in type_data["optical_properties"].values():
+            if isinstance(prop_val, str):
+                prop_tokens = set(prop_val.lower().split())
+                overlap = len(tokens & prop_tokens)
+                score += overlap * 0.5
+        type_scores[type_name] = {"score": score, "matched": matched}
+
+    # Softmax blend
+    total = sum(max(d["score"], 0.01) for d in type_scores.values())
+    weights = {
+        name: max(d["score"], 0.01) / total
+        for name, d in type_scores.items()
+    }
+
+    # Weighted average of centers
+    coords = {p: 0.0 for p in ROCKWELL_PARAMETER_NAMES}
+    for type_name, weight in weights.items():
+        center = ROCKWELL_VISUAL_TYPES[type_name]["center"]
+        for p in ROCKWELL_PARAMETER_NAMES:
+            coords[p] += weight * center[p]
+
+    # Find nearest type
+    best_type = max(type_scores, key=lambda k: type_scores[k]["score"])
+    confidence = type_scores[best_type]["score"] / max(total, 1)
+
+    return {
+        "coordinates": {p: round(v, 4) for p, v in coords.items()},
+        "confidence": round(confidence, 3),
+        "nearest_type": best_type,
+        "matched_fragments": type_scores[best_type]["matched"],
+        "type_weights": {k: round(v, 4) for k, v in weights.items()},
+        "domain": "norman_rockwell"
+    }
+
+
+def _compute_rockwell_distance(id_1: str, id_2: str) -> dict:
+    """Compute Euclidean distance between two canonical states."""
+    state_a = ROCKWELL_CANONICAL_STATES[id_1]
+    state_b = ROCKWELL_CANONICAL_STATES[id_2]
+    dist = math.sqrt(sum(
+        (state_a[p] - state_b[p]) ** 2
+        for p in ROCKWELL_PARAMETER_NAMES
+    ))
+    components = {
+        p: round(abs(state_a[p] - state_b[p]), 4)
+        for p in ROCKWELL_PARAMETER_NAMES
+    }
+    dominant = max(components, key=components.get)
+    return {
+        "distance": round(dist, 4),
+        "components": components,
+        "dominant_axis": dominant,
+        "state_a": id_1,
+        "state_b": id_2
+    }
+
+
+def _compute_rockwell_trajectory(start_id: str, end_id: str, num_steps: int = 20) -> dict:
+    """Compute smooth linear trajectory between two canonical states."""
+    state_a = ROCKWELL_CANONICAL_STATES[start_id]
+    state_b = ROCKWELL_CANONICAL_STATES[end_id]
+
+    trajectory = []
+    for i in range(num_steps + 1):
+        t = i / num_steps
+        state = {
+            p: round((1 - t) * state_a[p] + t * state_b[p], 4)
+            for p in ROCKWELL_PARAMETER_NAMES
+        }
+        state["step"] = i
+        state["t"] = round(t, 4)
+        trajectory.append(state)
+
+    return {
+        "start": start_id,
+        "end": end_id,
+        "num_steps": num_steps,
+        "trajectory": trajectory,
+        "distance": _compute_rockwell_distance(start_id, end_id)["distance"]
+    }
+
+
+def _generate_rockwell_attractor_prompt(
+    state: dict,
+    mode: str = "composite",
+    style_modifier: str = "",
+    keyframe_count: int = 4
+) -> dict:
+    """
+    Generate image-generation prompt from 5D state coordinates.
+
+    Modes:
+        composite: Single blended prompt from all matching vocabulary
+        split_view: Separate prompt per narrative dimension
+        sequence: Multiple keyframe prompts (requires preset trajectory)
+    """
+    vocab = _extract_rockwell_visual_vocabulary(state)
+
+    if style_modifier:
+        prefix = f"{style_modifier}, "
+    else:
+        prefix = "Norman Rockwell-inspired illustration, "
+
+    if mode == "composite":
+        prompt = prefix + ", ".join(vocab["keywords"])
+        optical = vocab["optical_properties"]
+        prompt += f". Lighting: {optical['lighting']}. Palette: {optical['palette']}. "
+        prompt += f"Focus: {optical['focus']}."
+
+        return {
+            "mode": "composite",
+            "prompt": prompt,
+            "vocabulary": vocab,
+            "state": {p: round(state.get(p, 0.5), 4) for p in ROCKWELL_PARAMETER_NAMES}
+        }
+
+    elif mode == "split_view":
+        prompts = {}
+        # Generate prompts emphasizing each parameter dimension
+        dimension_emphasis = {
+            "temporal_compression": "Story-within-a-story — visible before, during, and after in single frame",
+            "gaze_circuit_closure": "Eye-line narrative — gaze vectors forming closed dramatic circuit",
+            "emotional_contrast": "Emotional counterpoint — characters in opposing psychological states",
+            "spatial_intimacy": "Proximity as narrative — physical distance encoding relational tension",
+            "narrative_density": "Detail economy — every object earns its place in the story"
+        }
+        for param, emphasis in dimension_emphasis.items():
+            val = state.get(param, 0.5)
+            intensity = "strong" if val > 0.7 else "moderate" if val > 0.4 else "subtle"
+            prompts[param] = f"{prefix}{emphasis} ({intensity}, {val:.2f})"
+
+        return {
+            "mode": "split_view",
+            "prompts": prompts,
+            "vocabulary": vocab,
+            "state": {p: round(state.get(p, 0.5), 4) for p in ROCKWELL_PARAMETER_NAMES}
+        }
+
+    else:
+        return {"error": f"Unknown mode: {mode}. Use 'composite' or 'split_view'."}
+
+
+# ============================================================================
 # FASTMCP SERVER INTERFACE
 # ============================================================================
 
 from fastmcp import FastMCP
 
-mcp = FastMCP("Norman Rockwell Visual Narrative Cohomology v3")
+mcp = FastMCP("Norman Rockwell Visual Narrative Cohomology v4 — Phase 2.6/2.7")
 
 @mcp.tool()
 def analyze_visual_narrative_cohomology(
@@ -1627,13 +2195,15 @@ When H¹ = 0: Single image contains complete dramatic arc
 
 @mcp.tool()
 def get_server_info() -> str:
-    """Get information about this enhanced Norman Rockwell MCP server."""
-    
+    """Get information about this Norman Rockwell MCP server."""
+
     info = {
         'name': 'Norman Rockwell Visual Narrative Cohomology Server',
-        'version': '3.0.0-geometric',
-        'description': 'Detects H¹ ≠ 0 obstructions with geometric gaze analysis and quality-weighted scoring',
-        
+        'version': '4.0.0-phase2.6',
+        'description': 'Detects H¹ ≠ 0 obstructions with geometric gaze analysis, '
+                       'quality-weighted scoring, Phase 2.6 rhythmic presets, '
+                       'and Phase 2.7 attractor visualization prompt generation',
+
         'v3_improvements': {
             'serialization_fix': 'NarrativeElement objects properly converted to dicts',
             'geometric_gaze_analysis': 'Gaze vectors with intersection quality measurement',
@@ -1642,25 +2212,669 @@ def get_server_info() -> str:
             'reciprocity_detection': 'Identifies one-way vs mutual engagement',
             'new_tool': 'analyze_gaze_geometry for direct vector analysis'
         },
-        
+
+        'v4_phase_2_6_enhancements': {
+            'parameter_space': '5D narrative morphospace (temporal_compression, gaze_circuit_closure, emotional_contrast, spatial_intimacy, narrative_density)',
+            'canonical_states': list(ROCKWELL_CANONICAL_STATES.keys()),
+            'rhythmic_presets': {
+                name: {
+                    'period': cfg['steps_per_cycle'],
+                    'pattern': cfg['pattern'],
+                    'states': f"{cfg['state_a']} ↔ {cfg['state_b']}"
+                }
+                for name, cfg in ROCKWELL_RHYTHMIC_PRESETS.items()
+            },
+            'all_periods': sorted(set(
+                cfg['steps_per_cycle'] for cfg in ROCKWELL_RHYTHMIC_PRESETS.values()
+            ))
+        },
+
+        'v4_phase_2_7_enhancements': {
+            'attractor_visualization': True,
+            'visual_types': list(ROCKWELL_VISUAL_TYPES.keys()),
+            'prompt_modes': ['composite', 'split_view'],
+            'decomposition': 'Text description → 5D coordinates (inverse pipeline)'
+        },
+
         'rockwell_principles_implemented': [
             'Temporal compression axiom',
             'Gaze structure axiom (geometric)',
             'Detail hierarchy axiom',
             'Dignity preservation axiom',
             'Spatial narrative axiom',
-            'Reciprocity axiom (NEW)'
+            'Reciprocity axiom'
         ],
-        
+
         'scoring_calibration': {
             'H1_excellent': '< 0.2 (Rockwell mastery)',
             'H1_good': '0.2 - 0.5 (Competent narrative)',
             'H1_developing': '0.5 - 1.0 (Core elements present)',
             'H1_needs_work': '> 1.0 (Significant gaps)'
+        },
+
+        'tier_4d_integration': {
+            'domain_id': 'norman_rockwell',
+            'parameter_names': ROCKWELL_PARAMETER_NAMES,
+            'preset_periods': sorted(set(
+                cfg['steps_per_cycle'] for cfg in ROCKWELL_RHYTHMIC_PRESETS.values()
+            )),
+            'n_canonical_states': len(ROCKWELL_CANONICAL_STATES),
+            'n_visual_types': len(ROCKWELL_VISUAL_TYPES),
+            'ready_for_composition': True
         }
     }
-    
+
     return json.dumps(info, indent=2)
+
+
+# ============================================================================
+# PHASE 2.6 TOOLS — Rhythmic Narrative Dynamics
+# ============================================================================
+
+@mcp.tool()
+def list_rockwell_canonical_states() -> str:
+    """
+    List all canonical Rockwell narrative states with 5D coordinates.
+
+    Layer 1 (0 tokens). Each state represents a distinct narrative mode
+    from Rockwell's body of work, positioned in the 5D narrative
+    parameter space.
+
+    Returns:
+        All 7 canonical states with coordinates, descriptions, and examples.
+    """
+    result = {}
+    for name, state in ROCKWELL_CANONICAL_STATES.items():
+        result[name] = {
+            "coordinates": {p: state[p] for p in ROCKWELL_PARAMETER_NAMES},
+            "description": state["description"],
+            "rockwell_examples": state.get("rockwell_examples", [])
+        }
+    return json.dumps(result, indent=2)
+
+
+@mcp.tool()
+def get_rockwell_state_details(state_id: str) -> str:
+    """
+    Get complete specification for a Rockwell canonical state.
+
+    Layer 1 (0 tokens).
+
+    Args:
+        state_id: One of: soda_fountain, four_freedoms, saturday_evening_post,
+                  triple_self_portrait, problem_we_all_live_with, war_bond,
+                  discovery_moment
+
+    Returns:
+        Full state specification with coordinates, description, visual vocabulary.
+    """
+    if state_id not in ROCKWELL_CANONICAL_STATES:
+        return json.dumps({
+            "error": f"Unknown state: {state_id}",
+            "available": list(ROCKWELL_CANONICAL_STATES.keys())
+        })
+
+    state = ROCKWELL_CANONICAL_STATES[state_id]
+    coords = {p: state[p] for p in ROCKWELL_PARAMETER_NAMES}
+    vocab = _extract_rockwell_visual_vocabulary(coords)
+
+    return json.dumps({
+        "state_id": state_id,
+        "coordinates": coords,
+        "description": state["description"],
+        "rockwell_examples": state.get("rockwell_examples", []),
+        "visual_vocabulary": vocab
+    }, indent=2)
+
+
+@mcp.tool()
+def list_rockwell_rhythmic_presets() -> str:
+    """
+    List all Phase 2.6 rhythmic presets for narrative dynamics.
+
+    Layer 1 (0 tokens). Each preset defines an oscillation between two
+    canonical narrative states, creating temporal aesthetic rhythm.
+
+    Available presets:
+        intimacy_witness (22):     soda_fountain ↔ problem_we_all_live_with
+        comedy_dignity (18):       saturday_evening_post ↔ four_freedoms
+        gaze_oscillation (20):     soda_fountain ↔ discovery_moment
+        density_sweep (28):        problem_we_all_live_with ↔ triple_self_portrait
+        address_mode (14):         war_bond ↔ four_freedoms
+
+    Returns:
+        All 5 presets with period, pattern, states, and description.
+    """
+    result = {}
+    for name, preset in ROCKWELL_RHYTHMIC_PRESETS.items():
+        result[name] = {
+            "period": preset["steps_per_cycle"],
+            "total_steps": preset["num_cycles"] * preset["steps_per_cycle"],
+            "pattern": preset["pattern"],
+            "state_a": preset["state_a"],
+            "state_b": preset["state_b"],
+            "description": preset["description"]
+        }
+    return json.dumps(result, indent=2)
+
+
+@mcp.tool()
+def apply_rockwell_rhythmic_preset(preset_name: str) -> str:
+    """
+    Apply a curated rhythmic narrative preset. Layer 2 (0 tokens).
+
+    Generates the full oscillation trajectory between two canonical
+    narrative states, returning parameter values at each step.
+
+    Args:
+        preset_name: One of: intimacy_witness, comedy_dignity,
+                     gaze_oscillation, density_sweep, address_mode
+
+    Returns:
+        Complete trajectory with per-step parameter values.
+    """
+    if preset_name not in ROCKWELL_RHYTHMIC_PRESETS:
+        return json.dumps({
+            "error": f"Unknown preset: {preset_name}",
+            "available": list(ROCKWELL_RHYTHMIC_PRESETS.keys())
+        })
+
+    trajectory = _generate_rockwell_preset_trajectory(preset_name)
+    preset = ROCKWELL_RHYTHMIC_PRESETS[preset_name]
+
+    return json.dumps({
+        "preset": preset_name,
+        "period": preset["steps_per_cycle"],
+        "pattern": preset["pattern"],
+        "states": f"{preset['state_a']} ↔ {preset['state_b']}",
+        "total_steps": len(trajectory),
+        "trajectory": trajectory
+    }, indent=2)
+
+
+@mcp.tool()
+def generate_rockwell_rhythmic_sequence(
+    state_a_id: str,
+    state_b_id: str,
+    oscillation_pattern: str = "sinusoidal",
+    num_cycles: int = 3,
+    steps_per_cycle: int = 20,
+    phase_offset: float = 0.0
+) -> str:
+    """
+    Generate custom rhythmic oscillation between any two narrative states.
+    Layer 2 (0 tokens).
+
+    Args:
+        state_a_id: Starting canonical state
+        state_b_id: Alternating canonical state
+        oscillation_pattern: 'sinusoidal', 'triangular', or 'square'
+        num_cycles: Number of complete A→B→A cycles
+        steps_per_cycle: Samples per cycle (= period)
+        phase_offset: Starting phase (0.0 = state A, 0.5 = state B)
+
+    Returns:
+        Oscillation sequence with parameter values at each step.
+    """
+    for sid in [state_a_id, state_b_id]:
+        if sid not in ROCKWELL_CANONICAL_STATES:
+            return json.dumps({
+                "error": f"Unknown state: {sid}",
+                "available": list(ROCKWELL_CANONICAL_STATES.keys())
+            })
+
+    state_a = ROCKWELL_CANONICAL_STATES[state_a_id]
+    state_b = ROCKWELL_CANONICAL_STATES[state_b_id]
+    total_steps = num_cycles * steps_per_cycle
+
+    alpha_values = _generate_rockwell_oscillation(total_steps, num_cycles, oscillation_pattern)
+
+    # Apply phase offset
+    if phase_offset > 0:
+        offset_steps = int(phase_offset * steps_per_cycle)
+        alpha_values = alpha_values[offset_steps:] + alpha_values[:offset_steps]
+
+    trajectory = []
+    for i, alpha in enumerate(alpha_values):
+        state = {"step": i}
+        for p in ROCKWELL_PARAMETER_NAMES:
+            state[p] = round((1 - alpha) * state_a[p] + alpha * state_b[p], 4)
+        trajectory.append(state)
+
+    return json.dumps({
+        "state_a": state_a_id,
+        "state_b": state_b_id,
+        "pattern": oscillation_pattern,
+        "period": steps_per_cycle,
+        "num_cycles": num_cycles,
+        "total_steps": total_steps,
+        "trajectory": trajectory
+    }, indent=2)
+
+
+@mcp.tool()
+def compute_rockwell_distance(id_1: str, id_2: str) -> str:
+    """
+    Compute distance between two canonical narrative states.
+    Layer 2 (0 tokens).
+
+    Args:
+        id_1: First state ID
+        id_2: Second state ID
+
+    Returns:
+        Euclidean distance and per-parameter component breakdown.
+    """
+    for sid in [id_1, id_2]:
+        if sid not in ROCKWELL_CANONICAL_STATES:
+            return json.dumps({
+                "error": f"Unknown state: {sid}",
+                "available": list(ROCKWELL_CANONICAL_STATES.keys())
+            })
+
+    return json.dumps(_compute_rockwell_distance(id_1, id_2), indent=2)
+
+
+@mcp.tool()
+def compute_rockwell_trajectory(
+    start_id: str,
+    end_id: str,
+    num_steps: int = 20
+) -> str:
+    """
+    Compute smooth trajectory between two narrative states.
+    Layer 2 (0 tokens).
+
+    Args:
+        start_id: Starting canonical state
+        end_id: Target canonical state
+        num_steps: Number of interpolation steps
+
+    Returns:
+        Linear trajectory with per-step parameter values.
+    """
+    for sid in [start_id, end_id]:
+        if sid not in ROCKWELL_CANONICAL_STATES:
+            return json.dumps({
+                "error": f"Unknown state: {sid}",
+                "available": list(ROCKWELL_CANONICAL_STATES.keys())
+            })
+
+    return json.dumps(
+        _compute_rockwell_trajectory(start_id, end_id, num_steps),
+        indent=2
+    )
+
+
+@mcp.tool()
+def classify_rockwell_intent(user_intent: str) -> str:
+    """
+    Classify narrative intent into nearest Rockwell narrative mode.
+    Layer 2 (0 tokens).
+
+    Takes a natural-language description of a desired narrative composition
+    and maps it to the nearest canonical state and visual type.
+
+    Args:
+        user_intent: Description of desired narrative aesthetic, e.g.
+                     'warm intimate scene between two people at a counter'
+
+    Returns:
+        Classified state, visual type, 5D coordinates, and prompt keywords.
+    """
+    decomposition = _decompose_rockwell_from_description(user_intent)
+    vocab = _extract_rockwell_visual_vocabulary(decomposition["coordinates"])
+
+    # Find nearest canonical state
+    best_state = None
+    best_dist = float('inf')
+    for name, state in ROCKWELL_CANONICAL_STATES.items():
+        dist = math.sqrt(sum(
+            (decomposition["coordinates"][p] - state[p]) ** 2
+            for p in ROCKWELL_PARAMETER_NAMES
+        ))
+        if dist < best_dist:
+            best_dist = dist
+            best_state = name
+
+    return json.dumps({
+        "user_intent": user_intent,
+        "nearest_canonical_state": best_state,
+        "canonical_distance": round(best_dist, 4),
+        "nearest_visual_type": vocab["nearest_type"],
+        "coordinates": decomposition["coordinates"],
+        "confidence": decomposition["confidence"],
+        "keywords": vocab["keywords"],
+        "optical_properties": vocab["optical_properties"],
+        "matched_fragments": decomposition["matched_fragments"]
+    }, indent=2)
+
+
+# ============================================================================
+# PHASE 2.7 TOOLS — Attractor Visualization Prompt Generation
+# ============================================================================
+
+@mcp.tool()
+def get_rockwell_visual_types() -> str:
+    """
+    List all Rockwell visual types with keywords and optical properties.
+    Layer 1 (0 tokens).
+
+    Returns 6 visual types spanning the narrative morphospace:
+        intimate_comedy, communal_dignity, social_witness,
+        meta_narrative, direct_address, contemplative_moment
+
+    Each type includes image-generation-ready keywords and optical specs.
+    """
+    result = {}
+    for name, vtype in ROCKWELL_VISUAL_TYPES.items():
+        result[name] = {
+            "center": vtype["center"],
+            "keywords": vtype["keywords"],
+            "optical_properties": vtype["optical_properties"]
+        }
+    return json.dumps(result, indent=2)
+
+
+@mcp.tool()
+def extract_rockwell_visual_vocabulary(
+    state: str = None,
+    state_id: str = None,
+    strength: float = 1.0
+) -> str:
+    """
+    Extract visual vocabulary from narrative parameter coordinates.
+    Layer 2 (0 tokens).
+
+    Provide either state (5D coordinates as JSON) or state_id (canonical name).
+
+    Args:
+        state: JSON object with parameter coordinates, e.g.
+               '{"temporal_compression": 0.8, "gaze_circuit_closure": 0.7, ...}'
+        state_id: Canonical state name (e.g. 'soda_fountain')
+        strength: Keyword weight multiplier [0.0, 1.0]
+
+    Returns:
+        Nearest visual type, keywords, optical properties, and distance.
+    """
+    if state_id and state_id in ROCKWELL_CANONICAL_STATES:
+        coords = {p: ROCKWELL_CANONICAL_STATES[state_id][p] for p in ROCKWELL_PARAMETER_NAMES}
+    elif state:
+        coords = json.loads(state) if isinstance(state, str) else state
+    else:
+        return json.dumps({"error": "Provide either 'state' (JSON coords) or 'state_id' (canonical name)"})
+
+    return json.dumps(
+        _extract_rockwell_visual_vocabulary(coords, strength),
+        indent=2
+    )
+
+
+@mcp.tool()
+def decompose_rockwell_from_description(description: str) -> str:
+    """
+    Decompose text description into 5D Rockwell narrative coordinates.
+    Layer 2 (0 tokens).
+
+    Inverse of the generative pipeline: takes a text description of an
+    image or desired aesthetic and recovers the narrative parameter
+    coordinates by matching against visual type keyword vocabularies.
+
+    Args:
+        description: Image description text (from Claude vision, user text,
+                     or any text describing a Rockwell-style narrative)
+
+    Returns:
+        5D coordinates, confidence, nearest visual type, matched fragments.
+    """
+    return json.dumps(
+        _decompose_rockwell_from_description(description),
+        indent=2
+    )
+
+
+@mcp.tool()
+def generate_rockwell_attractor_prompt(
+    state: str = None,
+    state_id: str = None,
+    mode: str = "composite",
+    style_modifier: str = ""
+) -> str:
+    """
+    Generate image prompt from narrative attractor state or coordinates.
+    Layer 2 (0 tokens).
+
+    Translates mathematical narrative coordinates into visual prompts
+    suitable for image generation (ComfyUI, Stable Diffusion, DALL-E).
+
+    Modes:
+        composite: Single blended prompt from attractor state
+        split_view: Separate prompt per narrative dimension
+
+    Args:
+        state: JSON with 5D coordinates (overrides state_id if provided)
+        state_id: Canonical state name (e.g. 'soda_fountain')
+        mode: 'composite' or 'split_view'
+        style_modifier: Optional prefix (e.g. 'oil painting', 'photograph')
+
+    Returns:
+        Image generation prompt(s) with vocabulary details.
+    """
+    if state_id and state_id in ROCKWELL_CANONICAL_STATES:
+        coords = {p: ROCKWELL_CANONICAL_STATES[state_id][p] for p in ROCKWELL_PARAMETER_NAMES}
+    elif state:
+        coords = json.loads(state) if isinstance(state, str) else state
+    else:
+        return json.dumps({"error": "Provide either 'state' (JSON coords) or 'state_id' (canonical name)"})
+
+    return json.dumps(
+        _generate_rockwell_attractor_prompt(coords, mode, style_modifier),
+        indent=2
+    )
+
+
+@mcp.tool()
+def generate_rockwell_sequence_prompts(
+    preset_name: str,
+    keyframe_count: int = 4,
+    style_modifier: str = ""
+) -> str:
+    """
+    Generate keyframe prompts from a Phase 2.6 rhythmic preset.
+    Layer 2 (0 tokens).
+
+    Extracts evenly-spaced keyframes from a rhythmic oscillation and
+    generates an image prompt for each. Useful for storyboard generation,
+    animation keyframes, or multi-panel narrative visualization.
+
+    Args:
+        preset_name: Phase 2.6 preset name (e.g. 'intimacy_witness')
+        keyframe_count: Number of keyframes to extract (default: 4)
+        style_modifier: Optional style prefix for all prompts
+
+    Returns:
+        Keyframe prompts with step, state, and vocabulary for each.
+    """
+    if preset_name not in ROCKWELL_RHYTHMIC_PRESETS:
+        return json.dumps({
+            "error": f"Unknown preset: {preset_name}",
+            "available": list(ROCKWELL_RHYTHMIC_PRESETS.keys())
+        })
+
+    trajectory = _generate_rockwell_preset_trajectory(preset_name)
+    total_steps = len(trajectory)
+
+    # Extract evenly spaced keyframes
+    keyframes = []
+    for i in range(keyframe_count):
+        step_idx = int(i * total_steps / keyframe_count)
+        state = trajectory[step_idx]
+        prompt_result = _generate_rockwell_attractor_prompt(state, "composite", style_modifier)
+        keyframes.append({
+            "keyframe": i,
+            "step": step_idx,
+            "state": {p: round(state[p], 4) for p in ROCKWELL_PARAMETER_NAMES},
+            "prompt": prompt_result.get("prompt", ""),
+            "nearest_visual_type": prompt_result.get("vocabulary", {}).get("nearest_type", "")
+        })
+
+    preset = ROCKWELL_RHYTHMIC_PRESETS[preset_name]
+    return json.dumps({
+        "preset": preset_name,
+        "period": preset["steps_per_cycle"],
+        "description": preset["description"],
+        "keyframe_count": keyframe_count,
+        "keyframes": keyframes
+    }, indent=2)
+
+
+@mcp.tool()
+def enhance_rockwell_prompt(
+    user_intent: str,
+    style_override: str = None,
+    intensity: str = "moderate"
+) -> str:
+    """
+    Prepare complete narrative enhancement for Claude synthesis.
+    Layer 3 interface.
+
+    Takes a natural-language description of desired narrative and returns
+    structured data combining Layer 1 taxonomy and Layer 2 computation,
+    ready for Claude to synthesize into an enhanced image prompt.
+
+    Args:
+        user_intent: Description of desired narrative aesthetic
+        style_override: Optional specific canonical state (auto-detected if not provided)
+        intensity: Enhancement intensity ('subtle', 'moderate', 'dramatic')
+
+    Returns:
+        Complete synthesis context with coordinates, vocabulary, optical
+        properties, and Rockwell technique recommendations.
+    """
+    # Classify intent
+    decomposition = _decompose_rockwell_from_description(user_intent)
+    coords = decomposition["coordinates"]
+
+    # Apply style override if provided
+    if style_override and style_override in ROCKWELL_CANONICAL_STATES:
+        override_state = ROCKWELL_CANONICAL_STATES[style_override]
+        blend = {"subtle": 0.3, "moderate": 0.6, "dramatic": 0.9}.get(intensity, 0.6)
+        for p in ROCKWELL_PARAMETER_NAMES:
+            coords[p] = (1 - blend) * coords[p] + blend * override_state[p]
+
+    # Extract vocabulary
+    vocab = _extract_rockwell_visual_vocabulary(coords)
+
+    # Build enhancement context
+    intensity_map = {
+        "subtle": {"keyword_count": 3, "optical_weight": 0.3},
+        "moderate": {"keyword_count": 5, "optical_weight": 0.6},
+        "dramatic": {"keyword_count": 7, "optical_weight": 1.0}
+    }
+    settings = intensity_map.get(intensity, intensity_map["moderate"])
+
+    # Find nearest canonical state for technique recommendations
+    best_state = None
+    best_dist = float('inf')
+    for name, state in ROCKWELL_CANONICAL_STATES.items():
+        dist = math.sqrt(sum(
+            (coords[p] - state[p]) ** 2 for p in ROCKWELL_PARAMETER_NAMES
+        ))
+        if dist < best_dist:
+            best_dist = dist
+            best_state = name
+
+    # Technique recommendations based on parameter values
+    techniques = []
+    if coords.get("temporal_compression", 0) > 0.8:
+        techniques.append("Layer temporal markers: prop from past, gesture of present, hint of future")
+    if coords.get("gaze_circuit_closure", 0) > 0.7:
+        techniques.append("Specify precise head angles: 'subject's gaze at 35° toward point X'")
+    if coords.get("emotional_contrast", 0) > 0.7:
+        techniques.append("Juxtapose opposing emotional states with body language specificity")
+    if coords.get("spatial_intimacy", 0) > 0.7:
+        techniques.append("Position figures within arm's reach; use shared surface as bridge")
+    if coords.get("narrative_density", 0) > 0.7:
+        techniques.append("Each visible object must advance the story — no decorative filler")
+
+    return json.dumps({
+        "user_intent": user_intent,
+        "intensity": intensity,
+        "coordinates": {p: round(v, 4) for p, v in coords.items()},
+        "nearest_canonical_state": best_state,
+        "nearest_visual_type": vocab["nearest_type"],
+        "keywords": vocab["keywords"][:settings["keyword_count"]],
+        "optical_properties": vocab["optical_properties"],
+        "rockwell_techniques": techniques,
+        "prompt_fragment": ", ".join(vocab["keywords"][:settings["keyword_count"]]),
+        "decomposition_confidence": decomposition["confidence"]
+    }, indent=2)
+
+
+@mcp.tool()
+def get_rockwell_domain_registry_config() -> str:
+    """
+    Get domain config for Tier 4D emergent attractor discovery integration.
+
+    Returns the complete registration data needed to add Norman Rockwell
+    to the multi-domain compositional limit cycle discovery system.
+
+    Usage:
+        Copy the returned config into domain_registry.py to enable
+        Norman Rockwell in emergent attractor analysis.
+    """
+    presets = {}
+    for name, cfg in ROCKWELL_RHYTHMIC_PRESETS.items():
+        presets[name] = {
+            "period": cfg["steps_per_cycle"],
+            "state_a": cfg["state_a"],
+            "state_b": cfg["state_b"],
+            "pattern": cfg["pattern"],
+            "description": cfg["description"]
+        }
+
+    state_coords = {}
+    for name, state in ROCKWELL_CANONICAL_STATES.items():
+        state_coords[name] = {p: state[p] for p in ROCKWELL_PARAMETER_NAMES}
+
+    return json.dumps({
+        "domain_id": "norman_rockwell",
+        "display_name": "Norman Rockwell Visual Narrative",
+        "description": "Single-frame narrative cohomology — temporal compression, "
+                       "gaze circuits, emotional arcs, spatial intimacy, detail economy",
+        "mcp_server": "norman-rockwell-mcp",
+        "parameter_names": ROCKWELL_PARAMETER_NAMES,
+        "presets": presets,
+        "state_coordinates": state_coords,
+        "all_periods": sorted(set(cfg["steps_per_cycle"] for cfg in ROCKWELL_RHYTHMIC_PRESETS.values())),
+        "n_visual_types": len(ROCKWELL_VISUAL_TYPES),
+        "visual_type_ids": list(ROCKWELL_VISUAL_TYPES.keys()),
+        "vocabulary": {
+            "temporal": [
+                "before-during-after compression", "temporal markers",
+                "backstory props", "resolution hints", "narrative arc"
+            ],
+            "gaze": [
+                "gaze circuit", "mutual eye contact", "viewer loop",
+                "directed attention", "narrative path"
+            ],
+            "emotional": [
+                "emotional opposition", "dignity preservation",
+                "comedy-pathos fusion", "transitional states",
+                "character arc in single frame"
+            ],
+            "spatial": [
+                "proximity tension", "barrier crossing",
+                "shared surface connection", "power positioning",
+                "intimate framing"
+            ],
+            "detail": [
+                "earned detail", "narrative economy",
+                "symbolic props", "environmental storytelling",
+                "layered discovery"
+            ]
+        }
+    }, indent=2)
 
 # =============================================================================
 # MAIN
