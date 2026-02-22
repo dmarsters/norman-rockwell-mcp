@@ -2827,8 +2827,8 @@ def get_rockwell_domain_registry_config() -> str:
     for name, cfg in ROCKWELL_RHYTHMIC_PRESETS.items():
         presets[name] = {
             "period": cfg["steps_per_cycle"],
-            "state_a": cfg["state_a"],
-            "state_b": cfg["state_b"],
+            "state_a_id": cfg["state_a"],
+            "state_b_id": cfg["state_b"],
             "pattern": cfg["pattern"],
             "description": cfg["description"]
         }
